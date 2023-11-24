@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "15676013426",
+    "project_id": "tieuluan-2cfe4",
+    "storage_bucket": "tieuluan-2cfe4.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:15676013426:android:d19fea6e62f991ac713beb",
+        "android_client_info": {
+          "package_name": "com.example.tieuluan"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAl-vwvxMxpz7vzhpg40V2berlykh81QSI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
