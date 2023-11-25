@@ -8,9 +8,11 @@ import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.Base64;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
@@ -28,7 +30,7 @@ public class EditStudentActivity extends AppCompatActivity {
     private EditText edtFullName, edtAge, edtPhone;
     private Button btnUpdate, btnCancel, btnBack;
     private RadioGroup radioButton;
-    private ImageView imageView;
+    private ImageButton btnChoosePhoto;
     private Student student;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,8 +52,14 @@ public class EditStudentActivity extends AppCompatActivity {
             public void onClick(View v) {
                 if(student!=null){
                     edtFullName.setText(student.getName()+"");
+                    Log.e("TAG", "onClick: "+edtFullName );
                     edtAge.setText(student.getAge()+"");
+                    Log.e("TAG", "onClick: "+edtAge );
+
                     edtPhone.setText(student.getPhone()+"");
+                    Log.e("TAG", "onClick: "+edtPhone );
+
+
 
                     String radioButtonText=student.getStatus();
                     RadioGroup radioGroup = findViewById(R.id.btnStatus);
@@ -68,9 +76,9 @@ public class EditStudentActivity extends AppCompatActivity {
                     //                imageView
                     if (student.getImage() != null && student.getImage() instanceof String) {
                         String imageUrl = (String) student.getImage();
-                        Picasso.get().load(imageUrl).into(imageView);
+                        Picasso.get().load(imageUrl).into(btnChoosePhoto);
                     } else {
-                        imageView.setImageResource(R.drawable.img_student);
+                        btnChoosePhoto.setImageResource(R.drawable.img_student);
                     }
 
                 }
@@ -90,6 +98,10 @@ public class EditStudentActivity extends AppCompatActivity {
                 String age=edtAge.getText().toString();
                 String id=student.getId();
                 String status=student.getStatus().toString();
+                Log.e("TAG", "onClick: "+phone );
+                Log.e("TAG", "onClick: "+age );
+                Log.e("TAG", "onClick: "+id);
+                Log.e("TAG", "onClick: "+status);
 //                ImageView img=student.getImage();
                 FirebaseDatabase database=FirebaseDatabase.getInstance();
                 DatabaseReference myRef= database.getReference("dbStudent");
@@ -110,12 +122,12 @@ public class EditStudentActivity extends AppCompatActivity {
         edtAge = findViewById(R.id.edtAge);
         edtPhone = findViewById(R.id.edtPhone);
         radioButton = findViewById(R.id.btnStatus);
-        imageView = findViewById(R.id.imgStudent);
+        btnChoosePhoto = findViewById(R.id.btnChoosePhoto);
         btnUpdate = findViewById(R.id.btnUpdate);
         btnBack = findViewById(R.id.btnBack);
         btnCancel = findViewById(R.id.btnCancel);
 
-        imageView.setOnClickListener(new View.OnClickListener() {
+        btnChoosePhoto.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 // Mở Intent để chọn ảnh từ thư viện
@@ -144,12 +156,12 @@ public class EditStudentActivity extends AppCompatActivity {
                 }
             }
             //                imageView
-            if (student.getImage() != null && student.getImage() instanceof String) {
-                String imageUrl = (String) student.getImage();
-                Picasso.get().load(imageUrl).into(imageView);
-            } else {
-                imageView.setImageResource(R.drawable.img_student);
-            }
+//            if (student.getImage() != null && student.getImage() instanceof String) {
+//                String imageUrl = (String) student.getImage();
+//                Picasso.get().load(imageUrl).into(imageView);
+//            } else {
+//                imageView.setImageResource(R.drawable.img_student);
+//            }
 
         }
         else {

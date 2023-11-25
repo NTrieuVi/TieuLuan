@@ -106,7 +106,7 @@
     <androidx.appcompat.widget.AppCompatTextView
         android:layout_width="120dp"
         android:layout_height="120dp"
-        android:id="@+id/imgStudent"
+        android:id="@+id/imgStudent1"
         android:background="@drawable/img_student"
         app:layout_constraintStart_toStartOf="@+id/btnStudent"
         app:layout_constraintEnd_toEndOf="@+id/btnStudent"

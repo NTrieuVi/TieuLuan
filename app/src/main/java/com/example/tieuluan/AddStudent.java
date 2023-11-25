@@ -73,26 +73,27 @@ public class AddStudent extends AppCompatActivity {
                 String age=edtAge.getText().toString().trim();
                 String phone=edtPhone.getText().toString().trim();
 
+
                 int selectedRadioId=radioButton.getCheckedRadioButtonId();
                 RadioButton selectedRadioButton = findViewById(selectedRadioId);
                 String radioButtonText = selectedRadioButton.getText().toString().trim();
 
 
 //                imageView
-                BitmapDrawable drawable = (BitmapDrawable) imageView.getDrawable();
-                Bitmap bitmap = drawable.getBitmap();
-                String imgBase64 = bitmapToBase64(bitmap);
+//                BitmapDrawable drawable = (BitmapDrawable) imageView.getDrawable();
+//                Bitmap bitmap = drawable.getBitmap();
+//                String imgBase64 = bitmapToBase64(bitmap);
                 String imgUrl="";
 //                String imageUrl = editText.getText().toString().trim();
 
 
-                Student student = new Student(imgBase64, fullName, age, phone, radioButtonText);
 
                 FirebaseDatabase database=FirebaseDatabase.getInstance();
                 DatabaseReference myRef=database.getReference("dbStudent");
 //                tạo id ngẫu nhiên
                 String id=myRef.push().getKey();
 //                thêm dl sinh viên
+                Student student = new Student(id,"", fullName, age, phone, radioButtonText);
                 myRef.child(id).setValue(student).addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void unused) {

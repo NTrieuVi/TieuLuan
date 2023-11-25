@@ -61,7 +61,7 @@ public class StudentAdapter extends ArrayAdapter<Student> {
         if (student != null) {
             tvFulName.setText(student.getName());
             tvAgeStudent.setText(student.getAge());
-            tvStatusStudent.setText(student.getStatus().toString());
+            tvStatusStudent.setText(student.getStatus());
 
             if (student.getImage() != null) {
                 // Nếu đây là resource ID, sử dụng setImageResource

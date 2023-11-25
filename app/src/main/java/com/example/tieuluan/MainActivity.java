@@ -57,14 +57,6 @@ public class MainActivity extends AppCompatActivity {
 //        Khởi tạo danh sách
         studentArrayList=new ArrayList<>();
         GetData();
-//        studentArrayList.add(new Student(R.drawable.img,"1","Nguyễn Triệu Vi",
-//                "20","010201010","Normal"));
-//        studentArrayList.add(new Student(R.drawable.img,"2","Nguyễn Văn A",
-//                "18","191919199","Normal"));
-//        studentArrayList.add(new Student(R.drawable.img,"3","Nguyễn Văn B",
-//                "30","292010381","Normal"));
-//        studentArrayList.add(new Student(R.drawable.img,"4","Nguyễn Văn C",
-//                "22","394949499","Normal"));
 
 //        tạo adapter gán cho listview
         adapter=new StudentAdapter(this,

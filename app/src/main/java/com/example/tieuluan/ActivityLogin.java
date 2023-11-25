@@ -21,7 +21,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 public class ActivityLogin extends AppCompatActivity {
-    private static final String TAG = "MyActivity";
+
     private EditText edtUserName;
     private EditText edtPassword;
     private Button btnLogin;
@@ -48,36 +48,31 @@ public class ActivityLogin extends AppCompatActivity {
                     databaseReference.child("dbStudent").addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot snapshot) {
+                            boolean userFound = false;
 
-                            for (DataSnapshot data : snapshot.getChildren()){
-                                String username=data.child("Phone").getValue(String.class);
-                                if(data.hasChild(username)){
-                                    String getPassword = data.child("Password").getValue(String.class);
+                            for (DataSnapshot userSnapshot : snapshot.getChildren()) {
+                                String phone = userSnapshot.child("Phone").getValue(String.class);
+                                String pass = userSnapshot.child("Password").getValue(String.class);
 
-                                    Log.e(TAG, "onDataChange: "+username);
-
-                                    if(getPassword.equals(password)){
-                                        Toast.makeText(ActivityLogin.this,"Successfully login",Toast.LENGTH_LONG).show();
-                                        startActivity(new Intent(ActivityLogin.this,MainActivity.class));
-                                        finish();
-                                    }
-                                    else {
-                                        Toast.makeText(ActivityLogin.this,"Wrong password",Toast.LENGTH_LONG).show();
-
-                                    }
+                                if (phone != null && pass != null &&
+                                        phone.equals(username) && pass.equals(password)) {
+                                    // Đăng nhập thành công
+                                    Toast.makeText(ActivityLogin.this, "Đăng nhập thành công", Toast.LENGTH_SHORT).show();
+                                    userFound = true;
+                                    startActivity(new Intent(ActivityLogin.this, MainActivity.class));
+                                    finish();
                                 }
-                                else {
-                                    Toast.makeText(ActivityLogin.this,"Login failed",Toast.LENGTH_LONG).show();
-
-                                }
-
                             }
 
+                            if (!userFound) {
+                                Toast.makeText(ActivityLogin.this, "Tài khoản hoặc mật khẩu không chính xác", Toast.LENGTH_SHORT).show();
+                            }
                         }
 
                         @Override
                         public void onCancelled(@NonNull DatabaseError error) {
-
+                            Log.e("Firebase", "Error fetching data: " + error.getMessage());
+                            Toast.makeText(ActivityLogin.this, "Error fetching data", Toast.LENGTH_SHORT).show();
                         }
                     });
                 }
