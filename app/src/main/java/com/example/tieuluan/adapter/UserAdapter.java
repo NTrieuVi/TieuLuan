@@ -12,14 +12,13 @@ import android.widget.ImageView;
 import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.example.tieuluan.EditStudent;
 import com.example.tieuluan.EditUserActivity;
 import com.example.tieuluan.R;
-import com.example.tieuluan.model.Student;
+
+import com.example.tieuluan.model.User;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -29,13 +28,13 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.List;
 
-public class StudentAdapter extends ArrayAdapter<Student> {
+public class UserAdapter extends ArrayAdapter<User> {
     @NonNull
     private Activity activity;
     private int resource;
     @NonNull
-    private List<Student> objects;
-    public StudentAdapter(@NonNull Activity activity, int resource, @NonNull List<Student> objects) {
+    private List<User> objects;
+    public UserAdapter(@NonNull Activity activity, int resource, @NonNull List<User> objects) {
         super(activity, resource, objects);
         this.activity=activity;
         this.resource=resource;
@@ -50,32 +49,30 @@ public class StudentAdapter extends ArrayAdapter<Student> {
         View view=inflater.inflate(this.resource,null);
 
 //        Khai báo TextView
-        ImageView imgPhotoStudent = view.findViewById(R.id.imgPhotoStudent);
-        TextView tvNameStudent = view.findViewById(R.id.tvNameStudent);
-        TextView tvStudentId = view.findViewById(R.id.tvStudentId);
-        TextView tvGenderStudent = view.findViewById(R.id.tvGenderStudent);
+        ImageView imgPhotoUser=view.findViewById(R.id.imgPhotoUser);
+        TextView tvFulName=view.findViewById(R.id.tvNameUser);
+        TextView tvAgeUser=view.findViewById(R.id.tvAgeUser);
+        TextView tvStatusUser=view.findViewById(R.id.tvStatusUser);
 
-//        Lấy đối tượng sinh viên và đưa lên textView
-        Student student = this.objects.get(position);
+        User user = this.objects.get(position);
 
-        if (student != null) {
-            tvNameStudent.setText(student.getName());
-            tvStudentId.setText(student.getId());
-            tvGenderStudent.setText(student.getGender());
+        if (user != null) {
+            tvFulName.setText(user.getName());
+            tvAgeUser.setText(user.getAge());
+            tvStatusUser.setText(user.getStatus());
 
-            if (student.getAvatar() != null) {
+            if (user.getImage() != null) {
                 // Nếu đây là resource ID, sử dụng setImageResource
 //                imgPhotoUser.setImageResourcee(user.getImage());
-//            } else if (student.getImageUrl() != null && !student.getImageUrl().isEmpty()) {
-//                // Nếu đây là URL, sử dụng Picasso
-//                Picasso.get().load(student.getImageUrl()).into(imgPhotoStudent);
+            } else if (user.getImageUrl() != null && !user.getImageUrl().isEmpty()) {
+                // Nếu đây là URL, sử dụng Picasso
+                Picasso.get().load(user.getImageUrl()).into(imgPhotoUser);
             } else {
-                imgPhotoStudent.setImageResource(R.drawable.img_student);
+                imgPhotoUser.setImageResource(R.drawable.img_teacher);
             }
         }
 
-
-        ImageView btnMenu = view.findViewById(R.id.btnMenuStudent);
+        ImageView btnMenu = view.findViewById(R.id.btnMenuUser);
         btnMenu.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -88,20 +85,22 @@ public class StudentAdapter extends ArrayAdapter<Student> {
                         }
                         else if(menuItem.getItemId()==R.id.editCurentUser){
                             //nhấn btn update->mh update
-                            Intent intent=new Intent(activity, EditStudent.class);
-//                            STUDENT là khóa dùng nhận dạng gói tin, student là đối tượng cần implement serializable
-                            intent.putExtra("STUDENT",student);
+                            Intent intent=new Intent(activity, EditUserActivity.class);
+//                            USER là khóa dùng nhận dạng gói tin, user là đối tượng cần implement serializable
+                            intent.putExtra("USER",user);
                             //mở mh
                             activity.startActivity(intent);
                         }
                         else if(menuItem.getItemId()==R.id.deleteCurentUser){
                             FirebaseDatabase database=FirebaseDatabase.getInstance();
-                            DatabaseReference myRef= database.getReference("dbStudent");
-                            myRef.child(student.getId()).removeValue(new DatabaseReference.CompletionListener() {
+                            DatabaseReference myRef= database.getReference("dbUser");
+                            myRef.child(user.getId()).removeValue(new DatabaseReference.CompletionListener() {
                                 @Override
                                 public void onComplete(@Nullable DatabaseError error, @NonNull DatabaseReference ref) {
                                     Toast.makeText(activity,
-                                            "xóa thành công",Toast.LENGTH_LONG).show();
+                                    "xóa thành công",Toast.LENGTH_LONG).show();
+
+
                                 }
                             });
                         }

@@ -3,17 +3,13 @@ package com.example.tieuluan;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.provider.MediaStore;
-import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Toast;
@@ -23,13 +19,12 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.squareup.picasso.Picasso;
 
-import java.io.ByteArrayOutputStream;
-
-public class EditStudentActivity extends AppCompatActivity {
+public class EditStudent extends AppCompatActivity {
     private static final int PICK_IMAGE_REQUEST = 1;
-    private EditText edtFullName, edtAge, edtPhone;
-    private Button btnUpdate, btnCancel, btnBack;
+    private EditText editNameStudent, editDepartmentStudent, editPhoneStudent;
+    private Button btnUpdate, btnCancelEdit, btnBackEdit;
     private RadioGroup radioButton;
+    private RadioButton radioEditMale, radioEditFemale;
     private ImageButton btnChoosePhoto;
     private Student student;
     @Override
@@ -41,28 +36,23 @@ public class EditStudentActivity extends AppCompatActivity {
     }
 
     private void addEvents() {
-        btnBack.setOnClickListener(new View.OnClickListener() {
+        btnBackEdit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 finish();
             }
         });
-        btnCancel.setOnClickListener(new View.OnClickListener() {
+        btnCancelEdit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if(student!=null){
-                    edtFullName.setText(student.getName()+"");
-                    Log.e("TAG", "onClick: "+edtFullName );
-                    edtAge.setText(student.getAge()+"");
-                    Log.e("TAG", "onClick: "+edtAge );
-
-                    edtPhone.setText(student.getPhone()+"");
-                    Log.e("TAG", "onClick: "+edtPhone );
+                    editNameStudent.setText(student.getName()+"");
+                    editDepartmentStudent.setText(student.getDepartment()+"");
+                    editPhoneStudent.setText(student.getPhone()+"");
 
 
-
-                    String radioButtonText=student.getStatus();
-                    RadioGroup radioGroup = findViewById(R.id.btnStatus);
+                    String radioButtonText = student.getGender();
+                    RadioGroup radioGroup = findViewById(R.id.btnEditGender);
                     for (int i = 0; i < radioGroup.getChildCount(); i++) {
                         View view = radioGroup.getChildAt(i);
                         if (view instanceof RadioButton) {
@@ -74,8 +64,8 @@ public class EditStudentActivity extends AppCompatActivity {
                         }
                     }
                     //                imageView
-                    if (student.getImage() != null && student.getImage() instanceof String) {
-                        String imageUrl = (String) student.getImage();
+                    if (student.getAvatar() != null && student.getAvatar() instanceof String) {
+                        String imageUrl = (String) student.getAvatar();
                         Picasso.get().load(imageUrl).into(btnChoosePhoto);
                     } else {
                         btnChoosePhoto.setImageResource(R.drawable.img_student);
@@ -93,22 +83,23 @@ public class EditStudentActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 //cập nhật
-                String fullName=edtFullName.getText().toString();
-                String phone=edtPhone.getText().toString();
-                String age=edtAge.getText().toString();
-                String id=student.getId();
-                String status=student.getStatus().toString();
-                Log.e("TAG", "onClick: "+phone );
-                Log.e("TAG", "onClick: "+age );
-                Log.e("TAG", "onClick: "+id);
-                Log.e("TAG", "onClick: "+status);
+                String fullName = editNameStudent.getText().toString();
+                String phone = editPhoneStudent.getText().toString();
+                String department = editDepartmentStudent.getText().toString();
+                String id = student.getId();
+                String gender;
+                if(radioEditMale.isChecked()){
+                    gender = "Male";
+                }
+                else gender = "Female";
+
 //                ImageView img=student.getImage();
                 FirebaseDatabase database=FirebaseDatabase.getInstance();
                 DatabaseReference myRef= database.getReference("dbStudent");
-                myRef.child(id).child("Name").setValue(fullName);
-                myRef.child(id).child("Age").setValue(age);
-                myRef.child(id).child("Phone").setValue(phone);
-                myRef.child(id).child("Status").setValue(status);
+                myRef.child(id).child("name").setValue(fullName);
+                myRef.child(id).child("department").setValue(department);
+                myRef.child(id).child("phone").setValue(phone);
+                myRef.child(id).child("gender").setValue(gender);
 
                 //myRef.child(id).child("Image").setValue(img);
                 finish();
@@ -118,14 +109,16 @@ public class EditStudentActivity extends AppCompatActivity {
     }
 
     private void addControls() {
-        edtFullName = findViewById(R.id.edtFullName);
-        edtAge = findViewById(R.id.edtAge);
-        edtPhone = findViewById(R.id.edtPhone);
-        radioButton = findViewById(R.id.btnStatus);
-        btnChoosePhoto = findViewById(R.id.btnChoosePhoto);
-        btnUpdate = findViewById(R.id.btnUpdate);
-        btnBack = findViewById(R.id.btnBack);
-        btnCancel = findViewById(R.id.btnCancel);
+        editNameStudent = findViewById(R.id.editNameStudent);
+        editDepartmentStudent = findViewById(R.id.editDepartmentStudent);
+        editPhoneStudent = findViewById(R.id.editPhoneStudent);
+        radioButton = findViewById(R.id.btnEditGender);
+        radioEditMale = findViewById(R.id.radioEditMale);
+        radioEditFemale = findViewById(R.id.radioEditFemale);
+        btnChoosePhoto = findViewById(R.id.btnChoosePhotoStudent);
+        btnUpdate = findViewById(R.id.btnUpdateStudent);
+        btnBackEdit = findViewById(R.id.btnBackEdit);
+        btnCancelEdit = findViewById(R.id.btnCancelEdit);
 
         btnChoosePhoto.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -138,13 +131,13 @@ public class EditStudentActivity extends AppCompatActivity {
         //lấy gói tin được gửi từ màn hình ngoài
         Intent intent=getIntent();
         //truyền khóa
-        student= (Student) intent.getSerializableExtra("STUDENT");
-        if(student!=null){
-            edtFullName.setText(student.getName()+"");
-            edtAge.setText(student.getAge()+"");
-            edtPhone.setText(student.getPhone()+"");
+        student = (Student) intent.getSerializableExtra("STUDENT");
+        if(student != null){
+            editNameStudent.setText(student.getName()+"");
+            editDepartmentStudent.setText(student.getDepartment()+"");
+            editPhoneStudent.setText(student.getPhone()+"");
 
-            String radioButtonText=student.getStatus();
+            String radioButtonText = student.getGender();
             for (int i = 0; i < radioButton.getChildCount(); i++) {
                 View view = radioButton.getChildAt(i);
                 if (view instanceof RadioButton) {

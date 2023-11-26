@@ -45,7 +45,7 @@ public class ActivityLogin extends AppCompatActivity {
                     Toast.makeText(getApplicationContext(),"Please enter your username or password",Toast.LENGTH_LONG).show();
                 }
                 else {
-                    databaseReference.child("dbStudent").addListenerForSingleValueEvent(new ValueEventListener() {
+                    databaseReference.child("dbUser").addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot snapshot) {
                             boolean userFound = false;

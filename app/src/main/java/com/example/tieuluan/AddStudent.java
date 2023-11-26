@@ -1,38 +1,42 @@
 package com.example.tieuluan;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.Base64;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.Spinner;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.tieuluan.model.Student;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
 
 import java.io.ByteArrayOutputStream;
 
 public class AddStudent extends AppCompatActivity {
     private static final int PICK_IMAGE_REQUEST = 1;
-    private EditText edtFullName, edtAge, edtPhone;
+    private EditText edtStdName, edtDeparment, edtStdPhone;
     private Button btnAdd, btnCancel, btnBack;
+    private Spinner dptSpinner;
     private RadioGroup radioButton;
     private ImageView imageView;
 
@@ -42,6 +46,16 @@ public class AddStudent extends AppCompatActivity {
         setContentView(R.layout.activity_add_student);
         addControls(); //Khai báo control trên giao diện
         addEvent(); //khai báo sự kiện
+
+//        dptSpinner = findViewById(R.id.spinner);
+//
+//        String[] khoa = new String[]{"Công nghệ thông tin", "Quản trị kinh doanh", "Luật", "Điện - điện tử", "Ngoại ngữ"};
+//        ArrayAdapter<String> dptAdapter = new ArrayAdapter<>(this,
+//                android.R.layout.simple_spinner_item, khoa);
+//
+//        dptAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+//        dptSpinner.setAdapter(dptAdapter);
+
     }
 
     private void addEvent() {
@@ -57,9 +71,9 @@ public class AddStudent extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 //xóa hết các text
-                edtAge.setText("");
-                edtPhone.setText("");
-                edtFullName.setText("");
+                edtDeparment.setText("");
+                edtStdPhone.setText("");
+                edtStdName.setText("");
                 radioButton.clearCheck();
                 imageView.setImageResource(R.drawable.add);
             }
@@ -69,16 +83,13 @@ public class AddStudent extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 //thêm sinh viên vào database
-                String fullName=edtFullName.getText().toString().trim();
-                String age=edtAge.getText().toString().trim();
-                String phone=edtPhone.getText().toString().trim();
-
+                String nameStd = edtStdName.getText().toString().trim();
+                String dpm = edtDeparment.getText().toString().trim();
+                String phone = edtStdPhone.getText().toString().trim();
 
                 int selectedRadioId=radioButton.getCheckedRadioButtonId();
                 RadioButton selectedRadioButton = findViewById(selectedRadioId);
                 String radioButtonText = selectedRadioButton.getText().toString().trim();
-
-
 //                imageView
 //                BitmapDrawable drawable = (BitmapDrawable) imageView.getDrawable();
 //                Bitmap bitmap = drawable.getBitmap();
@@ -86,46 +97,75 @@ public class AddStudent extends AppCompatActivity {
                 String imgUrl="";
 //                String imageUrl = editText.getText().toString().trim();
 
+                FirebaseDatabase database = FirebaseDatabase.getInstance();
+                DatabaseReference myRef = database.getReference("dbStudent");
 
-
-                FirebaseDatabase database=FirebaseDatabase.getInstance();
-                DatabaseReference myRef=database.getReference("dbStudent");
-//                tạo id ngẫu nhiên
-                String id=myRef.push().getKey();
-//                thêm dl sinh viên
-                Student student = new Student(id,"", fullName, age, phone, radioButtonText);
-                myRef.child(id).setValue(student).addOnSuccessListener(new OnSuccessListener<Void>() {
+                myRef.addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
-                    public void onSuccess(Void unused) {
-                        //thêm thành công
-                        Toast.makeText(getApplicationContext(), "Thêm thành công", Toast.LENGTH_LONG).show();
-                        finish();//thoát màn hình thêm
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        String id;
+                        int maxInt = 0;
+
+                        for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                            if (snapshot.hasChild("id")) {
+                                String currentId = snapshot.child("id").getValue(String.class);
+                                try {
+                                    int currentInt = Integer.parseInt(currentId);
+                                    if (currentInt > maxInt) {
+                                        maxInt = currentInt;
+                                    }
+                                } catch (NumberFormatException e) {
+                                    Log.e("ConversionError", "Cannot convert string to int", e);
+                                }
+                            }
+                        }
+
+                        if (maxInt != 0) {
+                            int incrementedValue = maxInt + 1;
+                            id = String.valueOf(incrementedValue);
+                        } else {
+                            id = "52300001";
+                        }
+
+                        //Add new student (them sv moi)
+                        Student student = new Student(id,"", nameStd,  radioButtonText, phone, dpm);
+                        myRef.child(id).setValue(student).addOnSuccessListener(new OnSuccessListener<Void>() {
+                            @Override
+                            public void onSuccess(Void unused) {
+                                //thêm thành công
+                                Toast.makeText(getApplicationContext(), "Thêm thành công", Toast.LENGTH_LONG).show();
+                                finish();//thoát màn hình thêm
+                            }
+                        }).addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                //them thất bại
+                                Toast.makeText(getApplicationContext(), "Thêm thất bại"+e.toString(), Toast.LENGTH_LONG).show();
+                            }
+                        });
                     }
-                }).addOnFailureListener(new OnFailureListener() {
+
                     @Override
-                    public void onFailure(@NonNull Exception e) {
-                        //them thất bại
-                        Toast.makeText(getApplicationContext(), "Thêm thất bại"+e.toString(), Toast.LENGTH_LONG).show();
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+                        // Xử lý khi có lỗi xảy ra trong việc đọc dữ liệu từ Firebase
+                        Log.e("FirebaseError", "Error reading data", databaseError.toException());
                     }
                 });
-
             }
-
-
         });
     }
 
 
     @SuppressLint("WrongViewCast")
     private void addControls() {
-        edtFullName = findViewById(R.id.edtFullName);
-        edtAge = findViewById(R.id.edtAge);
-        edtPhone = findViewById(R.id.edtPhone);
-        radioButton = findViewById(R.id.btnStatus);
+        edtStdName = findViewById(R.id.edtNameStudent);
+        edtDeparment = findViewById(R.id.edtDepartment);
+        edtStdPhone = findViewById(R.id.edtPhoneStudent);
+        radioButton = findViewById(R.id.btnGender);
         imageView = findViewById(R.id.imgStudent);
-        btnAdd = findViewById(R.id.btnAdd);
-        btnBack = findViewById(R.id.btnBack);
-        btnCancel = findViewById(R.id.btnCancel);
+        btnAdd = findViewById(R.id.btnAddStd);
+        btnBack = findViewById(R.id.btnBackStd);
+        btnCancel = findViewById(R.id.btnCancelStd);
 
         imageView.setOnClickListener(new View.OnClickListener() {
             @Override

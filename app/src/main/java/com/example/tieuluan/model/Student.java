@@ -1,94 +1,81 @@
 package com.example.tieuluan.model;
 
 import java.io.Serializable;
+import java.util.Date;
 
 public class Student implements Serializable {
-    private String imageUrl;
-    private String Image;
     private String id;
+    private String Avatar;
+    //private String StudentId;
     private String Name;
-    private String Age;
+    private String Gender;
     private String Phone;
-    private String Status;
+    private String Department;
 
-    public Student(String id,String image, String name, String age, String phone, String status) {
-        Image = image;
+
+    public Student(String id, String avatar, String name, String gender, String phone, String departmnet){
+        this.id = id;
+        Avatar = avatar;
+        //StudentId = studentId;
         Name = name;
-        Age = age;
+        Gender = gender;
         Phone = phone;
-        Status = status;
-        this.id=id;
-    }
-
-
-    public String getImage() {
-        return Image;
-    }
-
-    public void setImage(String image) {
-        Image = image;
+        Department = departmnet;
     }
 
     public String getId() {
         return id;
     }
-
     public void setId(String id) {
         this.id = id;
+    }
+
+    public String getAvatar() {
+        return Avatar;
+    }
+    public void setAvatar(String avatar) {
+        Avatar = avatar;
     }
 
     public String getName() {
         return Name;
     }
-
     public void setName(String name) {
         Name = name;
     }
 
-    public String getAge() {
-        return Age;
+    public String getGender() {
+        return Gender;
     }
-
-    public void setAge(String age) {
-        Age = age;
+    public void setGender(String gender) {
+        Gender = gender;
     }
 
     public String getPhone() {
         return Phone;
     }
-
     public void setPhone(String phone) {
         Phone = phone;
     }
 
-    public String getStatus() {
-        return Status;
+    public String getDepartment() {
+        return Department;
     }
-
-    public void setStatus(String status) {
-        Status = status;
+    public void setDepartment(String department) {
+        Department = department;
     }
 
     @Override
     public String toString() {
         return "Student{" +
-                "Image='" + Image + '\'' +
+                "Avatar='" + Avatar + '\'' +
                 ", id='" + id + '\'' +
                 ", Name='" + Name + '\'' +
-                ", Age='" + Age + '\'' +
+                ", Gender='" + Gender + '\'' +
                 ", Phone='" + Phone + '\'' +
-                ", Status='" + Status + '\'' +
+                ", Department='" + Department + '\'' +
                 '}';
     }
 
-    public Student() {
-    }
-
-    public String getImageUrl() {
-        return imageUrl;
-    }
-
-    public void setImageUrl(String imageUrl) {
-        this.imageUrl = imageUrl;
-    }
+    public Student(){ }
 }

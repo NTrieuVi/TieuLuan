@@ -17,53 +17,55 @@
             <androidx.appcompat.widget.AppCompatImageButton
                 android:layout_width="100dp"
                 android:layout_height="100dp"
-                android:id="@+id/imgPhotoUser"
+                android:id="@+id/imgPhotoStudent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 android:src="@drawable/ic_launcher_foreground"
                 android:layout_margin="5dp"
-            />
+                />
             <androidx.appcompat.widget.AppCompatTextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textStyle="bold"
                 android:textSize="24sp"
-                android:id="@+id/tvNameUser"
+                android:id="@+id/tvNameStudent"
                 android:layout_marginStart="10dp"
-                app:layout_constraintStart_toEndOf="@+id/imgPhotoUser"
-                app:layout_constraintTop_toTopOf="@+id/imgPhotoUser"
+                app:layout_constraintStart_toEndOf="@+id/imgPhotoStudent"
+                app:layout_constraintTop_toTopOf="@+id/imgPhotoStudent"
                 tools:text="Nguyễn Triệu Vi"/>
+
             <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tv1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/tv1"
                 android:layout_marginStart="10dp"
                 android:layout_marginTop="10dp"
-                android:text="Age:"
-                app:layout_constraintStart_toEndOf="@+id/imgPhotoUser"
+                android:text="Id:"
                 android:textStyle="bold"
-                app:layout_constraintTop_toBottomOf="@+id/tvNameUser"/>
+                app:layout_constraintStart_toEndOf="@+id/imgPhotoStudent"
+                app:layout_constraintTop_toBottomOf="@+id/tvNameStudent" />
             <androidx.appcompat.widget.AppCompatTextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/tvAgeUser"
+                android:id="@+id/tvStudentId"
                 android:layout_marginStart="10dp"
                 app:layout_constraintStart_toEndOf="@+id/tv1"
                 app:layout_constraintTop_toTopOf="@+id/tv1"
                 tools:text="20"/>
+
             <androidx.appcompat.widget.AppCompatTextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
                 android:id="@+id/tv2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:layout_marginStart="10dp"
-                android:text="Status:"
-                app:layout_constraintStart_toEndOf="@+id/imgPhotoUser"
+                android:text="Gender:"
                 android:textStyle="bold"
-                app:layout_constraintTop_toBottomOf="@+id/tv1"/>
+                app:layout_constraintStart_toEndOf="@+id/imgPhotoStudent"
+                app:layout_constraintTop_toBottomOf="@+id/tv1" />
             <androidx.appcompat.widget.AppCompatTextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/tvStatusUser"
+                android:id="@+id/tvGenderStudent"
                 android:layout_marginStart="10dp"
                 app:layout_constraintStart_toEndOf="@+id/tv2"
                 app:layout_constraintTop_toTopOf="@+id/tv2"
@@ -73,10 +75,10 @@
                 android:layout_height="2dp"
                 android:background="#0C46C4"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/imgPhotoUser"/>
+                app:layout_constraintTop_toBottomOf="@id/imgPhotoStudent"/>
         </androidx.constraintlayout.widget.ConstraintLayout>
         <androidx.appcompat.widget.AppCompatImageView
-            android:id="@+id/btnMenuUser"
+            android:id="@+id/btnMenuStudent"
             android:layout_width="30dp"
             android:layout_height="30dp"
             android:src="@drawable/menu_ic"
