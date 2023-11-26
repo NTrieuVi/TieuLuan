@@ -134,4 +134,11 @@ public class StudentAdapter extends ArrayAdapter<Student> {
         });
         return view;
     }
+    public Student getItem(int position) {
+        if (position >= 0 && position < objects.size()) {
+            return objects.get(position);
+        } else {
+            return null;
+        }
+    }
 }

@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
@@ -68,6 +69,24 @@ public class ManagerStudent extends AppCompatActivity {
                 studentArrayList);
 
         listStudent.setAdapter(studentAdapter);
+
+        listStudent.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                // Lấy thông tin từ item được chọn
+                Student selectedStudent = studentArrayList.get(position);
+                Toast.makeText(ManagerStudent.this,"Item click at póition"+position,Toast.LENGTH_LONG).show();
+                // Tạo Intent và chuyển dữ liệu sang ActivityDetailStudent
+                Intent intent = new Intent(ManagerStudent.this, ActivityDetailStudent.class);
+                intent.putExtra("STUDENT_NAME", selectedStudent.getName());
+                intent.putExtra("STUDENT_DEPARTMENT", selectedStudent.getDepartment());
+                intent.putExtra("STUDENT_PHONE", selectedStudent.getPhone());
+                intent.putExtra("STUDENT_GENDER", selectedStudent.getGender());
+//                intent.putExtra("STUDENT_IMAGE_URL", selectedStudent.getAvatar());
+              // Bắt đầu ActivityDetailStudent
+                startActivity(intent);
+            }
+        });
     }
 
     @Override
@@ -116,4 +135,5 @@ public class ManagerStudent extends AppCompatActivity {
             }
         });
     }
+
 }
