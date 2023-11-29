@@ -14,9 +14,33 @@
         android:layout_height="wrap_content"
         android:text="Back Home"
         android:drawableStart="@drawable/icon_home"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:backgroundTint="#0C46C4"/>
+    <Button
+        android:focusable="false"
+        android:clickable="false"
+        android:id="@+id/btnImportFile"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Import CSV"
+        android:drawableStart="@drawable/icon_file"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         android:backgroundTint="#0C46C4"/>
+    <Button
+        android:focusable="false"
+        android:clickable="false"
+        android:id="@+id/btnExportFile"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Export CSV"
+        android:drawableStart="@drawable/icon_export"
+        app:layout_constraintStart_toEndOf="@+id/btnStdBackMain"
+        app:layout_constraintEnd_toStartOf="@id/btnImportFile"
+        app:layout_constraintTop_toTopOf="parent"
+        android:backgroundTint="#0C46C4"/>
+
     <EditText
         android:padding="8dp"
         android:background="@color/white"

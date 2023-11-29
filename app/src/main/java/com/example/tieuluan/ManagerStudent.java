@@ -4,8 +4,13 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Intent;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
+import android.provider.OpenableColumns;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -28,6 +33,15 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -35,15 +49,19 @@ import java.util.Comparator;
 public class ManagerStudent extends AppCompatActivity {
     private ListView listStudent;
     private ArrayList<Student> studentArrayList;
-
+    private DatabaseReference myRefer;
     private StudentAdapter studentAdapter;
     private EditText edtSearch;
+    private static final int READ_REQUEST_CODE = 42;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_manager_student);
 
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        myRefer = database.getReference("dbStudent");
         listStudent = findViewById(R.id.listStudent);
         studentArrayList = new ArrayList<>();
         GetDataStudent();
@@ -90,6 +108,27 @@ public class ManagerStudent extends AppCompatActivity {
                 showSortMenu(v);
             }
         });
+        
+        //import CSV
+        Button btnImportStudents = findViewById(R.id.btnImportFile);
+        btnImportStudents.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+                intent.addCategory(Intent.CATEGORY_OPENABLE);
+                intent.setType("*/*");
+                startActivityForResult(intent, READ_REQUEST_CODE);
+            }
+        });
+
+        //Export CSV
+        Button btnExportToCSV = findViewById(R.id.btnExportFile);
+        btnExportToCSV.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                exportFromFirebaseToCSV();
+            }
+        });
 
         // click item ->detail student
         listStudent.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -108,6 +147,191 @@ public class ManagerStudent extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+    }
+
+    // Import students CSV
+    private void importStudentsToFirebase() {
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference myRef = database.getReference("dbStudent");
+        for (Student student : studentArrayList) {
+            DatabaseReference newStudentRef = myRef.push();
+            newStudentRef.setValue(student);
+        }
+
+        Toast.makeText(getApplicationContext(), "Students imported to Firebase successfully", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent resultData) {
+        super.onActivityResult(requestCode, resultCode, resultData);
+        if (requestCode == READ_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
+            Uri uri = null;
+            if (resultData != null) {
+                uri = resultData.getData();
+                String filePath = getPathFromURI(uri);
+                if (filePath != null && !filePath.isEmpty()) { // Check if the file path is valid
+                    importStudentsFromCSV(filePath);
+                } else {
+                    Toast.makeText(getApplicationContext(), "Invalid file path", Toast.LENGTH_SHORT).show();
+                }
+            }
+        }
+    }
+
+    private String getPathFromURI(Uri uri) {
+        Cursor cursor = getContentResolver().query(uri, null, null, null, null);
+        String filePath = "";
+        if (cursor != null && cursor.moveToFirst()) {
+            int index = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME);
+            if (index != -1) {
+                filePath = cursor.getString(index);
+            }
+            cursor.close();
+        }
+        return filePath;
+    }
+    private void importStudentsFromCSV(String filePath) {
+        if (myRefer == null) {
+            Toast.makeText(getApplicationContext(), "Firebase reference is not initialized", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        try {
+            InputStream inputStream = new FileInputStream(new File(filePath));
+            BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+
+            String line;
+            while ((line = reader.readLine()) != null) {
+                String[] data = line.split(",");
+                // Ensure that the data array has the expected number of elements
+                if (data.length == 6) {
+                    String id = data[0].trim();
+                    String img = data[1].trim();
+                    String name = data[2].trim();
+                    String gender = data[3].trim();
+                    String phone = data[4].trim();
+                    String department = data[5].trim();
+
+                    Student student = new Student(id, img, name, gender, phone, department);
+
+                    DatabaseReference newStudentRef = myRefer.push();
+                    newStudentRef.setValue(student);
+
+                    studentArrayList.add(student);
+                }
+            }
+
+            studentAdapter.notifyDataSetChanged();
+            reader.close();
+            Toast.makeText(getApplicationContext(), "Students imported successfully", Toast.LENGTH_SHORT).show();
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            Toast.makeText(getApplicationContext(), "File not found: " + e.getMessage(), Toast.LENGTH_LONG).show();
+        } catch (IOException e) {
+            e.printStackTrace();
+            Toast.makeText(getApplicationContext(), "Error importing students from file", Toast.LENGTH_LONG).show();
+        }
+    }
+
+
+
+    //Export CSV
+    private void exportFromFirebaseToCSV() {
+        DatabaseReference myRef = FirebaseDatabase.getInstance().getReference("dbStudent");
+
+        myRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    StringBuilder csvData = new StringBuilder();
+
+                    csvData.append("ID,Image,Name,Gender,Phone,Department\n");
+
+                    for (DataSnapshot studentSnapshot : dataSnapshot.getChildren()) {
+                        Student student = studentSnapshot.getValue(Student.class);
+
+                        csvData.append(student.getId()).append(',')
+                                .append(student.getAvatar()).append(',')
+                                .append(student.getName()).append(',')
+                                .append(student.getGender()).append(',')
+                                .append(student.getPhone()).append(',')
+                                .append(student.getDepartment()).append('\n');
+                    }
+
+                    String csvFileName = "firebase_data.csv";
+                    boolean success = writeCSVToFile(csvFileName, csvData.toString());
+
+                    if (success) {
+                        Toast.makeText(getApplicationContext(), "Data exported to " + csvFileName, Toast.LENGTH_LONG).show();
+                    } else {
+                        Toast.makeText(getApplicationContext(), "Export failed", Toast.LENGTH_LONG).show();
+                    }
+                } else {
+                    Toast.makeText(getApplicationContext(), "No data available to export", Toast.LENGTH_LONG).show();
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Toast.makeText(getApplicationContext(), "Error reading data from Firebase", Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+
+
+    private void exportToCSV() {
+        if (isExternalStorageWritable()) {
+            StringBuilder csvData = new StringBuilder();
+
+            csvData.append("ID,Image,Name,Gender,Phone,Department\n");
+
+            for (Student student : studentArrayList) {
+                csvData.append(student.getId()).append(',')
+                        .append(student.getAvatar()).append(',')
+                        .append(student.getName()).append(',')
+                        .append(student.getGender()).append(',')
+                        .append(student.getPhone()).append(',')
+                        .append(student.getDepartment()).append('\n');
+            }
+
+            String csvFileName = "student_data.csv";
+            boolean success = writeCSVToFile(csvFileName, csvData.toString());
+
+            if (success) {
+                Toast.makeText(getApplicationContext(), "Data exported to " + csvFileName, Toast.LENGTH_LONG).show();
+            } else {
+                Toast.makeText(getApplicationContext(), "Export failed", Toast.LENGTH_LONG).show();
+            }
+        } else {
+            Toast.makeText(getApplicationContext(), "External storage not available", Toast.LENGTH_LONG).show();
+        }
+    }
+    private boolean isExternalStorageWritable() {
+        String state = Environment.getExternalStorageState();
+        return Environment.MEDIA_MOUNTED.equals(state);
+    }
+
+    private boolean writeCSVToFile(String fileName, String csvData) {
+        try {
+            File directory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
+
+            if (!directory.exists()) {
+                directory.mkdirs();
+            }
+
+            File file = new File(directory, fileName);
+
+            FileWriter fileWriter = new FileWriter(file);
+            fileWriter.write(csvData);
+            fileWriter.flush();
+            fileWriter.close();
+
+            return true;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 
     // search

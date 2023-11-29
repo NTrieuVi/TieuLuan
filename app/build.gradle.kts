@@ -49,6 +49,6 @@ dependencies {
     implementation("com.google.android.material:material:1.10.0")
     implementation("com.google.android.material:material:1.10.0")
     implementation("com.google.firebase:firebase-analytics:21.5.0")
-
+    
 
 }
