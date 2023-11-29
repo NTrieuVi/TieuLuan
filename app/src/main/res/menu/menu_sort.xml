@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/menuSortByName"
+        android:title="Sort by Name" />
+    <item
+        android:id="@+id/menuSortByGenderMale"
+        android:title="Sort by Male" />
+    <item
+        android:id="@+id/menuSortByGenderFemale"
+        android:title="Sort by Female" />
+    <item
+        android:id="@+id/menuSortByStudentId"
+        android:title="Sort by Student ID" />
+</menu>

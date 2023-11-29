@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -54,6 +55,7 @@ public class StudentAdapter extends ArrayAdapter<Student> {
         TextView tvNameStudent = view.findViewById(R.id.tvNameStudent);
         TextView tvStudentId = view.findViewById(R.id.tvStudentId);
         TextView tvGenderStudent = view.findViewById(R.id.tvGenderStudent);
+
 
 //        Lấy đối tượng sinh viên và đưa lên textView
         Student student = this.objects.get(position);

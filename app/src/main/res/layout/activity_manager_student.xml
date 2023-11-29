@@ -3,7 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="#28C2A0">
 
     <Button
         android:focusable="false"
@@ -11,16 +12,40 @@
         android:id="@+id/btnStdBackMain"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Trở lại"
+        android:text="Back Home"
+        android:drawableStart="@drawable/icon_home"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        android:backgroundTint="#0C46C4"/>
+    <EditText
+        android:padding="8dp"
+        android:background="@color/white"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/edtSearchStudent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginEnd="90dp"
+        app:layout_constraintTop_toBottomOf="@+id/btnStdBackMain"
+        android:drawableStart="@drawable/icon_search"
+        android:hint="Search student"/>
+    <androidx.appcompat.widget.AppCompatImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@id/imgSort"
+        app:srcCompat="@drawable/icon_sort"
+        app:layout_constraintTop_toTopOf="@id/edtSearchStudent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/edtSearchStudent"/>
 
     <ListView
+        android:background="@color/white"
         android:id="@+id/listStudent"
-        android:layout_width="0dp"
-        android:layout_height="681dp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:focusable="true"
+        android:layout_marginTop="90dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btnStdBackMain" />
+        app:layout_constraintTop_toBottomOf="@+id/imgSort" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

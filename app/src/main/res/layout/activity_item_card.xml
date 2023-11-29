@@ -9,6 +9,7 @@
     app:cardCornerRadius="5dp"
     app:cardElevation="5dp">
     <androidx.cardview.widget.CardView
+        android:focusable="false"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
         <androidx.constraintlayout.widget.ConstraintLayout
