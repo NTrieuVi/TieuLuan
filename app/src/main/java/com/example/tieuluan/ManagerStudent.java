@@ -114,12 +114,15 @@ public class ManagerStudent extends AppCompatActivity {
     private void filterStudentList(String searchCriteria) {
         ArrayList<Student> filteredList = new ArrayList<>();
         for (Student student : studentArrayList) {
-            // tìm kiếm sinh viên
-            if (student.getName().toLowerCase().contains(searchCriteria.toLowerCase())) {
-                filteredList.add(student);
-            }
-            if(student.getId().contains(searchCriteria)){
-                filteredList.add(student);
+            // Tìm kiếm sinh viên theo tên
+            if (student.getName().toLowerCase().contains(searchCriteria.toLowerCase()) ||
+                    student.getId().contains(searchCriteria) ||
+                    student.getDepartment().contains(searchCriteria)) {
+
+                // Kiểm tra xem sinh viên đã tồn tại trong danh sách lọc chưa
+                if (!filteredList.contains(student)) {
+                    filteredList.add(student);
+                }
             }
         }
         // Cập nhật Adapter với danh sách đã lọc
