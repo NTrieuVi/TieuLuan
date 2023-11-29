@@ -88,7 +88,6 @@ public class ManagerStudent extends AppCompatActivity {
 
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                // Gọi phương thức để lọc danh sách sinh viên khi người dùng nhập liệu
                 filterStudentList(charSequence.toString());
             }
 
@@ -203,7 +202,6 @@ public class ManagerStudent extends AppCompatActivity {
             String line;
             while ((line = reader.readLine()) != null) {
                 String[] data = line.split(",");
-                // Ensure that the data array has the expected number of elements
                 if (data.length == 6) {
                     String id = data[0].trim();
                     String img = data[1].trim();
