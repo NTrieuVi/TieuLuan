@@ -118,6 +118,9 @@ public class ManagerStudent extends AppCompatActivity {
             if (student.getName().toLowerCase().contains(searchCriteria.toLowerCase())) {
                 filteredList.add(student);
             }
+            if(student.getId().contains(searchCriteria)){
+                filteredList.add(student);
+            }
         }
         // Cập nhật Adapter với danh sách đã lọc
         studentAdapter.clear();
