@@ -68,14 +68,12 @@ public class StudentAdapter extends ArrayAdapter<Student> {
             tvStudentId.setText(student.getId());
             tvGenderStudent.setText(student.getGender());
 
-            if (student.getAvatar() != null) {
-                // Nếu đây là resource ID, sử dụng setImageResource
-//                imgPhotoUser.setImageResourcee(user.getImage());
-//            } else if (student.getImageUrl() != null && !student.getImageUrl().isEmpty()) {
-//                // Nếu đây là URL, sử dụng Picasso
-//                Picasso.get().load(student.getImageUrl()).into(imgPhotoStudent);
+            if (student.getAvatar() != null && !student.getAvatar().isEmpty()) {
+
+                Picasso.get().load(student.getAvatar()).into(imgPhotoStudent);
+
             } else {
-                imgPhotoStudent.setImageResource(R.drawable.img_student);
+                imgPhotoStudent.setImageResource(R.drawable.img_student_avatar);
             }
         }
 

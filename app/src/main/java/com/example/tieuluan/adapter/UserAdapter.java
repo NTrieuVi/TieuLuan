@@ -61,14 +61,12 @@ public class UserAdapter extends ArrayAdapter<User> {
             tvAgeUser.setText(user.getAge());
             tvStatusUser.setText(user.getStatus());
 
-            if (user.getImage() != null) {
-                // Nếu đây là resource ID, sử dụng setImageResource
-//                imgPhotoUser.setImageResourcee(user.getImage());
-            } else if (user.getImageUrl() != null && !user.getImageUrl().isEmpty()) {
-                // Nếu đây là URL, sử dụng Picasso
-                Picasso.get().load(user.getImageUrl()).into(imgPhotoUser);
+            if (user.getImage() != null && !user.getImage().isEmpty()) {
+
+                Picasso.get().load(user.getImage()).into(imgPhotoUser);
+
             } else {
-                imgPhotoUser.setImageResource(R.drawable.img_teacher);
+                imgPhotoUser.setImageResource(R.drawable.user);
             }
         }
 
