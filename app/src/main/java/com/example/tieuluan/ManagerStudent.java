@@ -1,16 +1,21 @@
 package com.example.tieuluan;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.content.ContentValues;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.provider.MediaStore;
 import android.provider.OpenableColumns;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -42,6 +47,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -54,7 +60,7 @@ public class ManagerStudent extends AppCompatActivity {
     private StudentAdapter studentAdapter;
     private EditText edtSearch;
     private static final int READ_REQUEST_CODE = 42;
-
+    private static final int REQUEST_WRITE_EXTERNAL_STORAGE=1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -122,6 +128,8 @@ public class ManagerStudent extends AppCompatActivity {
         });
         
         //import CSV
+
+
         Button btnImportStudents = findViewById(R.id.btnImportFile);
         btnImportStudents.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -134,6 +142,7 @@ public class ManagerStudent extends AppCompatActivity {
         });
 
         //Export CSV
+
         Button btnExportToCSV = findViewById(R.id.btnExportFile);
         btnExportToCSV.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -248,6 +257,46 @@ public class ManagerStudent extends AppCompatActivity {
 
 
     //Export CSV
+    private String prepareCSVData(DataSnapshot dataSnapshot) {
+        StringBuilder csvData = new StringBuilder();
+        csvData.append("ID,Name,Gender,Phone,Department\n");
+
+        for (DataSnapshot studentSnapshot : dataSnapshot.getChildren()) {
+            Student student = studentSnapshot.getValue(Student.class);
+
+            if (student != null) {
+                csvData.append(student.getId()).append(',')
+                        .append(student.getName()).append(',')
+                        .append(student.getGender()).append(',')
+                        .append(student.getPhone()).append(',')
+                        .append(student.getDepartment()).append('\n');
+            }
+        }
+
+        return csvData.toString();
+    }
+
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == REQUEST_WRITE_EXTERNAL_STORAGE) {
+            boolean allPermissionsGranted = true;
+            for (int result : grantResults) {
+                if (result != PackageManager.PERMISSION_GRANTED) {
+                    allPermissionsGranted = false;
+                    break;
+                }
+            }
+            if (allPermissionsGranted) {
+                exportToCSV();
+            } else {
+                Toast.makeText(this, "Permission denied. Cannot export to CSV.", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+
     private void exportFromFirebaseToCSV() {
         DatabaseReference myRef = FirebaseDatabase.getInstance().getReference("dbStudent");
 
@@ -255,28 +304,19 @@ public class ManagerStudent extends AppCompatActivity {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()) {
-                    StringBuilder csvData = new StringBuilder();
+                    String csvData = prepareCSVData(dataSnapshot);
 
-                    csvData.append("ID,Image,Name,Gender,Phone,Department\n");
+                    if (!csvData.isEmpty()) {
+                        String csvFileName = "firebase_data.csv";
+                        boolean success = writeCSVToFile(csvFileName, csvData);
 
-                    for (DataSnapshot studentSnapshot : dataSnapshot.getChildren()) {
-                        Student student = studentSnapshot.getValue(Student.class);
-
-                        csvData.append(student.getId()).append(',')
-                                .append(student.getAvatar()).append(',')
-                                .append(student.getName()).append(',')
-                                .append(student.getGender()).append(',')
-                                .append(student.getPhone()).append(',')
-                                .append(student.getDepartment()).append('\n');
-                    }
-
-                    String csvFileName = "firebase_data.csv";
-                    boolean success = writeCSVToFile(csvFileName, csvData.toString());
-
-                    if (success) {
-                        Toast.makeText(getApplicationContext(), "Data exported to " + csvFileName, Toast.LENGTH_LONG).show();
+                        if (success) {
+                            Toast.makeText(getApplicationContext(), "Data exported to " + csvFileName, Toast.LENGTH_LONG).show();
+                        } else {
+                            Toast.makeText(getApplicationContext(), "Export failed", Toast.LENGTH_LONG).show();
+                        }
                     } else {
-                        Toast.makeText(getApplicationContext(), "Export failed", Toast.LENGTH_LONG).show();
+                        Toast.makeText(getApplicationContext(), "No data available to export", Toast.LENGTH_LONG).show();
                     }
                 } else {
                     Toast.makeText(getApplicationContext(), "No data available to export", Toast.LENGTH_LONG).show();
@@ -285,10 +325,11 @@ public class ManagerStudent extends AppCompatActivity {
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-                Toast.makeText(getApplicationContext(), "Error reading data from Firebase", Toast.LENGTH_LONG).show();
+                Toast.makeText(getApplicationContext(), "Error reading data from Firebase: " + databaseError.getMessage(), Toast.LENGTH_LONG).show();
             }
         });
     }
+
 
 
     private void exportToCSV() {
@@ -298,12 +339,14 @@ public class ManagerStudent extends AppCompatActivity {
             csvData.append("ID,Image,Name,Gender,Phone,Department\n");
 
             for (Student student : studentArrayList) {
-                csvData.append(student.getId()).append(',')
-                        .append(student.getAvatar()).append(',')
-                        .append(student.getName()).append(',')
-                        .append(student.getGender()).append(',')
-                        .append(student.getPhone()).append(',')
-                        .append(student.getDepartment()).append('\n');
+                if (student != null) {
+                    csvData.append(student.getId()).append(',')
+                            .append(student.getAvatar()).append(',')
+                            .append(student.getName()).append(',')
+                            .append(student.getGender()).append(',')
+                            .append(student.getPhone()).append(',')
+                            .append(student.getDepartment()).append('\n');
+                }
             }
 
             String csvFileName = "student_data.csv";
@@ -323,25 +366,56 @@ public class ManagerStudent extends AppCompatActivity {
         return Environment.MEDIA_MOUNTED.equals(state);
     }
 
-    private boolean writeCSVToFile(String fileName, String csvData) {
+    @RequiresApi(api = Build.VERSION_CODES.Q)
+    private boolean writeCSVToMediaStore(String fileName, String csvData) {
         try {
-            File directory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
+            ContentValues contentValues = new ContentValues();
+            contentValues.put(MediaStore.Downloads.DISPLAY_NAME, fileName);
+            contentValues.put(MediaStore.Downloads.MIME_TYPE, "text/csv");
 
-            if (!directory.exists()) {
-                directory.mkdirs();
+            Uri contentUri = MediaStore.Downloads.EXTERNAL_CONTENT_URI;
+            Uri uri = getContentResolver().insert(contentUri, contentValues);
+
+            if (uri != null) {
+                try (OutputStream outputStream = getContentResolver().openOutputStream(uri)) {
+                    if (outputStream != null) {
+                        outputStream.write(csvData.getBytes());
+                        return true;
+                    }
+                }
             }
-
-            File file = new File(directory, fileName);
-
-            FileWriter fileWriter = new FileWriter(file);
-            fileWriter.write(csvData);
-            fileWriter.flush();
-            fileWriter.close();
-
-            return true;
         } catch (IOException e) {
             e.printStackTrace();
-            return false;
+        }
+
+        return false;
+    }
+
+    private boolean writeCSVToFile(String fileName, String csvData) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            return writeCSVToMediaStore(fileName, csvData);
+        } else {
+            try {
+                File directory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
+
+                if (!directory.exists() && !directory.mkdirs()) {
+                    Log.e("CSV Export", "Failed to create directory");
+                    return false;
+                }
+
+                File file = new File(directory, fileName);
+
+                FileWriter fileWriter = new FileWriter(file);
+                fileWriter.write(csvData);
+                fileWriter.flush();
+                fileWriter.close();
+
+                return true;
+            } catch (IOException e) {
+                e.printStackTrace();
+                Log.e("CSV Export", "Error writing CSV to file: " + e.getMessage());
+                return false;
+            }
         }
     }
 
