@@ -80,10 +80,7 @@ public class UserAdapter extends ArrayAdapter<User> {
                 popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                     @Override
                     public boolean onMenuItemClick(MenuItem menuItem) {
-                        if(menuItem.getItemId()==R.id.curentUserDetails){
-
-                        }
-                        else if(menuItem.getItemId()==R.id.editCurentUser){
+                        if(menuItem.getItemId()==R.id.editCurentUser){
                             //nhấn btn update->mh update
                             Intent intent=new Intent(activity, EditUserActivity.class);
 //                            USER là khóa dùng nhận dạng gói tin, user là đối tượng cần implement serializable
@@ -99,10 +96,12 @@ public class UserAdapter extends ArrayAdapter<User> {
                                 public void onComplete(@Nullable DatabaseError error, @NonNull DatabaseReference ref) {
                                     Toast.makeText(activity,
                                     "xóa thành công",Toast.LENGTH_LONG).show();
-
-
                                 }
                             });
+
+                            //xoa trong account
+                            DatabaseReference myRef2 = FirebaseDatabase.getInstance().getReference("dbAccount");
+                            myRef2.child(user.getId()).removeValue((error, ref) -> {});
                         }
 //                        else if(menuItem.getItemId()==R.id.menuBack){
 //                            Toast.makeText(activity,

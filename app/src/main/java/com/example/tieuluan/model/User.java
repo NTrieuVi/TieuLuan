@@ -11,7 +11,7 @@ public class User implements Serializable {
     private String Phone;
     private String Status;
 
-    public User(String id,String image, String name, String age, String phone, String status) {
+    public User(String id, String image, String name, String age, String phone, String status) {
         Image = image;
         Name = name;
         Age = age;

@@ -41,16 +41,25 @@
             android:name=".EditStudent"
             android:exported="false" />
         <activity
+            android:name=".EditCertificate"
+            android:exported="false" />
+        <activity
             android:name=".AddUser"
             android:exported="false" />
         <activity
             android:name=".AddStudent"
             android:exported="false" />
         <activity
+            android:name=".AddCertificate"
+            android:exported="false" />
+        <activity
             android:name=".ManagerStudent"
             android:exported="false" />
         <activity
             android:name=".ManagerUser"
+            android:exported="false" />
+        <activity
+            android:name=".ManagerCertificate"
             android:exported="false" />
         <activity
             android:name=".MainActivity"

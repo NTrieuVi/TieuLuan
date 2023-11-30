@@ -6,7 +6,7 @@
     android:layout_height="match_parent">
 
     <Button
-        android:id="@+id/btnUserBackMain"
+        android:id="@+id/btnCerBackMain"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Back"
@@ -14,11 +14,10 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <ListView
-        android:id="@+id/listUser"
-        android:layout_width="0dp"
+        android:id="@+id/listCertificate"
+        android:layout_width="409dp"
         android:layout_height="681dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btnUserBackMain" />
-
+        app:layout_constraintTop_toBottomOf="@+id/btnCerBackMain" />
 </androidx.constraintlayout.widget.ConstraintLayout>

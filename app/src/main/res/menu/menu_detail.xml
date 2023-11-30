@@ -3,9 +3,6 @@
     xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
-        android:id="@+id/curentUserDetails"
-        android:title="User Details" />
-    <item
         android:id="@+id/editCurentUser"
         android:icon="@drawable/edit"
         android:title="Edit User" />

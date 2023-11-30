@@ -118,15 +118,26 @@
         />
 
     <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/btnBackDetail"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="20dp"
-        android:id="@+id/btnBackDetail"
+        android:layout_marginTop="88dp"
+        android:backgroundTint="#0C46C4"
+        android:text="Back"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        android:layout_marginTop="50dp"
-        app:layout_constraintTop_toBottomOf="@+id/tv4"
-        android:text="Back"
-        android:backgroundTint="#0C46C4"/>
+        app:layout_constraintTop_toBottomOf="@+id/btnCertificate" />
+
+    <Button
+        android:id="@+id/btnCertificate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="280dp"
+        android:layout_marginTop="92dp"
+        android:backgroundTint="#0CC4B5"
+        android:text="Certificate"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tv4" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

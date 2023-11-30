@@ -19,10 +19,12 @@ import androidx.annotation.Nullable;
 
 import com.example.tieuluan.ActivityDetailStudent;
 import com.example.tieuluan.ActivityLogin;
+import com.example.tieuluan.EditCertificate;
 import com.example.tieuluan.EditStudent;
 import com.example.tieuluan.EditUserActivity;
 import com.example.tieuluan.ManagerStudent;
 import com.example.tieuluan.R;
+import com.example.tieuluan.model.Certificate;
 import com.example.tieuluan.model.Student;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -33,13 +35,13 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.List;
 
-public class StudentAdapter extends ArrayAdapter<Student> {
+public class CertificateAdapter extends ArrayAdapter<Certificate> {
     @NonNull
     private Activity activity;
     private int resource;
     @NonNull
-    private List<Student> objects;
-    public StudentAdapter(@NonNull Activity activity, int resource, @NonNull List<Student> objects) {
+    private List<Certificate> objects;
+    public CertificateAdapter(@NonNull Activity activity, int resource, @NonNull List<Certificate> objects) {
         super(activity, resource, objects);
         this.activity=activity;
         this.resource=resource;
@@ -49,38 +51,24 @@ public class StudentAdapter extends ArrayAdapter<Student> {
     @NonNull
     @Override
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
-//       một đối tượng sinh viên trả về một View, 1 view ứng với 1 object, sau đó lưu lại position
         LayoutInflater inflater=this.activity.getLayoutInflater();
         View view=inflater.inflate(this.resource,null);
 
 //        Khai báo TextView
-        ImageView imgPhotoStudent = view.findViewById(R.id.imgPhotoStudent);
-        TextView tvNameStudent = view.findViewById(R.id.tvNameStudent);
-        TextView tvStudentId = view.findViewById(R.id.tvStudentId);
-        TextView tvGenderStudent = view.findViewById(R.id.tvGenderStudent);
+        TextView tvNameCertificate = view.findViewById(R.id.tvNameCertificate);
+        TextView tvLevel = view.findViewById(R.id.tvLevel);
+        TextView tvDateStart = view.findViewById(R.id.tvDateStart);
 
+        Certificate certificate = this.objects.get(position);
 
-//        Lấy đối tượng sinh viên và đưa lên textView
-        Student student = this.objects.get(position);
-
-        if (student != null) {
-            tvNameStudent.setText(student.getName());
-            tvStudentId.setText(student.getId());
-            tvGenderStudent.setText(student.getGender());
-
-            if (student.getAvatar() != null) {
-                // Nếu đây là resource ID, sử dụng setImageResource
-//                imgPhotoUser.setImageResourcee(user.getImage());
-//            } else if (student.getImageUrl() != null && !student.getImageUrl().isEmpty()) {
-//                // Nếu đây là URL, sử dụng Picasso
-//                Picasso.get().load(student.getImageUrl()).into(imgPhotoStudent);
-            } else {
-                imgPhotoStudent.setImageResource(R.drawable.img_student);
-            }
+        if (certificate != null) {
+            tvNameCertificate.setText(certificate.getName());
+            tvLevel.setText(certificate.getLevel());
+            tvDateStart.setText(certificate.getDateStart());
         }
 
 
-        ImageView btnMenu = view.findViewById(R.id.btnMenuStudent);
+        ImageView btnMenu = view.findViewById(R.id.btnMenuCertificate);
         btnMenu.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -88,44 +76,28 @@ public class StudentAdapter extends ArrayAdapter<Student> {
                 popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                     @Override
                     public boolean onMenuItemClick(MenuItem menuItem) {
-                        if(menuItem.getItemId()==R.id.detailStudent){
-                            Intent intent = new Intent(activity, ActivityDetailStudent.class);
-                            intent.putExtra("STUDENT",student);
+                        if(menuItem.getItemId()==R.id.editCertificate){
+                            Intent intent=new Intent(activity, EditCertificate.class);
+                            intent.putExtra("CERTIFICATE",certificate);
                             //mở mh
                             activity.startActivity(intent);
                         }
-                        else if(menuItem.getItemId()==R.id.editStudent){
-                            //nhấn btn update->mh update
-                            Intent intent=new Intent(activity, EditStudent.class);
-//                            STUDENT là khóa dùng nhận dạng gói tin, student là đối tượng cần implement serializable
-                            intent.putExtra("STUDENT",student);
-                            //mở mh
-                            activity.startActivity(intent);
-                        }
-                        else if(menuItem.getItemId()==R.id.deleteStudent){
+                        else if(menuItem.getItemId()==R.id.deleteCertificate){
                             FirebaseDatabase database=FirebaseDatabase.getInstance();
-                            DatabaseReference myRef= database.getReference("dbStudent");
-                            myRef.child(student.getId()).removeValue(new DatabaseReference.CompletionListener() {
+                            DatabaseReference myRef= database.getReference("dbCertificate");
+                            myRef.child(certificate.getId()).removeValue(new DatabaseReference.CompletionListener() {
                                 @Override
                                 public void onComplete(@Nullable DatabaseError error, @NonNull DatabaseReference ref) {
                                     Toast.makeText(activity,
                                             "xóa thành công",Toast.LENGTH_LONG).show();
                                 }
                             });
-
-                            //xoa trong account
-                            DatabaseReference myRef2 = FirebaseDatabase.getInstance().getReference("dbAccount");
-                            myRef2.child(student.getId()).removeValue((error, ref) -> {});
                         }
-//                        else if(menuItem.getItemId()==R.id.menuBack){
-//                            Toast.makeText(activity,
-//                                    "you click button exit",Toast.LENGTH_LONG).show();
-//                        }
                         return false;
                     }
                 });
 //                truyền menu
-                popupMenu.getMenuInflater().inflate(R.menu.menu_student,popupMenu.getMenu());
+                popupMenu.getMenuInflater().inflate(R.menu.menu_certificate,popupMenu.getMenu());
 
                 try {
                     Field[] fields=popupMenu.getClass().getDeclaredFields();
@@ -145,12 +117,5 @@ public class StudentAdapter extends ArrayAdapter<Student> {
             }
         });
         return view;
-    }
-    public Student getItem(int position) {
-        if (position >= 0 && position < objects.size()) {
-            return objects.get(position);
-        } else {
-            return null;
-        }
     }
 }

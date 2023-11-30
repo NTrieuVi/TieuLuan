@@ -54,25 +54,21 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-//    @Override
-//    public boolean onCreateOptionsMenu(Menu menu) {
-//        getMenuInflater().inflate(R.menu.menu_option, menu);
-//        return super.onCreateOptionsMenu(menu);
-//    }
-//
-//    @Override
-//    public boolean onOptionsItemSelected(final MenuItem item) {
-//        if(item.getItemId() == R.id.menuAdd){
-//            Intent intent = new Intent(this, AddUser.class);
-//            startActivity(intent);
-//            return true;
-//        }
-//        if(item.getItemId() == R.id.menuDelete){
-//            Intent intent = new Intent(this, AddStudent.class);
-//            startActivity(intent);
-//            return true;
-//        }
-//        else return super.onOptionsItemSelected(item);
-//    }
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(final MenuItem item) {
+        if(item.getItemId() == R.id.logout){
+            Intent intent = new Intent(this, ActivityLogin.class);
+            startActivity(intent);
+            return true;
+        }
+
+        else return super.onOptionsItemSelected(item);
+    }
 
 }

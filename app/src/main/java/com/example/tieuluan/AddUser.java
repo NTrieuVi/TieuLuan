@@ -10,6 +10,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.Base64;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -18,11 +19,16 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Toast;
 
+import com.example.tieuluan.model.Account;
+import com.example.tieuluan.model.Student;
 import com.example.tieuluan.model.User;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
 
 import java.io.ByteArrayOutputStream;
@@ -66,7 +72,7 @@ public class AddUser extends AppCompatActivity {
         btnAdd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //thêm sinh viên vào database
+
                 String fullName=edtFullName.getText().toString().trim();
                 String age=edtAge.getText().toString().trim();
                 String phone=edtPhone.getText().toString().trim();
@@ -77,35 +83,65 @@ public class AddUser extends AppCompatActivity {
                 String radioButtonText = selectedRadioButton.getText().toString().trim();
 
 
-//                imageView
-//                BitmapDrawable drawable = (BitmapDrawable) imageView.getDrawable();
-//                Bitmap bitmap = drawable.getBitmap();
-//                String imgBase64 = bitmapToBase64(bitmap);
-                String imgUrl="";
-//                String imageUrl = editText.getText().toString().trim();
+                FirebaseDatabase database = FirebaseDatabase.getInstance();
+                DatabaseReference myRef = database.getReference("dbUser");
+                DatabaseReference myRef2 = database.getReference("dbAccount");
 
-
-
-                FirebaseDatabase database=FirebaseDatabase.getInstance();
-                DatabaseReference myRef=database.getReference("dbUser");
-//                tạo id ngẫu nhiên
-                String id=myRef.push().getKey();
-//                thêm dl sinh viên
-                User user = new User(id,"", fullName, age, phone, radioButtonText);
-                myRef.child(id).setValue(user).addOnSuccessListener(new OnSuccessListener<Void>() {
+                myRef.addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
-                    public void onSuccess(Void unused) {
-                        //thêm thành công
-                        Toast.makeText(getApplicationContext(), "Thêm thành công", Toast.LENGTH_LONG).show();
-                        finish();//thoát màn hình thêm
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        String id;
+                        int maxInt = 0;
+
+                        for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                            if (snapshot.hasChild("id")) {
+                                String currentId = snapshot.child("id").getValue(String.class);
+                                try {
+                                    int currentInt = Integer.parseInt(currentId);
+                                    if (currentInt > maxInt) {
+                                        maxInt = currentInt;
+                                    }
+                                } catch (NumberFormatException e) {
+                                    Log.e("ConversionError", "Cannot convert string to int", e);
+                                }
+                            }
+                        }
+
+                        if (maxInt != 0) {
+                            int incrementedValue = maxInt + 1;
+                            id = String.valueOf(incrementedValue);
+                        } else {
+                            id = "10001";
+                        }
+
+                        User user = new User(id,"", fullName, age, phone, radioButtonText);
+                        myRef.child(id).setValue(user).addOnSuccessListener(new OnSuccessListener<Void>() {
+                            @Override
+                            public void onSuccess(Void unused) {
+                                //thêm thành công
+                                Toast.makeText(getApplicationContext(), "Thêm user thành công", Toast.LENGTH_LONG).show();
+                                finish();
+                            }
+                        }).addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                //them thất bại
+                                Toast.makeText(getApplicationContext(), "Thêm user thất bại"+e.toString(), Toast.LENGTH_LONG).show();
+                            }
+                        });
+
+                        Account account = new Account(id,id,"User");
+                        myRef2.child(id).setValue(account).addOnSuccessListener(unused -> finish()).addOnFailureListener(e -> {});
                     }
-                }).addOnFailureListener(new OnFailureListener() {
+
                     @Override
-                    public void onFailure(@NonNull Exception e) {
-                        //them thất bại
-                        Toast.makeText(getApplicationContext(), "Thêm thất bại"+e.toString(), Toast.LENGTH_LONG).show();
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+                        Log.e("FirebaseError", "Error reading data", databaseError.toException());
                     }
                 });
+
+
+
             }
         });
     }

@@ -7,18 +7,23 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.RadioButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.example.tieuluan.model.Student;
 import com.squareup.picasso.Picasso;
 
 public class ActivityDetailStudent extends AppCompatActivity {
 
+    private String StudentId;
     private TextView tvDetailName;
     private TextView tvDetailDepartment;
     private TextView tvDetailPhone;
     private TextView tvDetailGender;
-    private Button btnBackDetail;
+    private Button btnBackDetail, btnCertificate;
     private ImageView imgStudentDetail;
+    private Student student;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,33 +33,15 @@ public class ActivityDetailStudent extends AppCompatActivity {
         addControls(); // Khai báo control trên giao diện
         addEvent();    // Khai báo sự kiện
 
-        // Lấy dữ liệu từ Intent
-        Intent intent = getIntent();
-        if (intent != null) {
-            String studentName = intent.getStringExtra("STUDENT_NAME");
-            String studentDepartment = intent.getStringExtra("STUDENT_DEPARTMENT");
-            String studentPhone = intent.getStringExtra("STUDENT_PHONE");
-            String studentGender = intent.getStringExtra("STUDENT_GENDER");
-//            String studentImageUrl = intent.getStringExtra("STUDENT_IMAGE_URL");
-
-            Log.d("MyTag", "Name: " + studentName);
-            Log.d("MyTag", "Department: " + studentDepartment);
-            Log.d("MyTag", "Phone: " + studentPhone);
-            Log.d("MyTag", "Gender: " + studentGender);
-//            Log.d("MyTag", "Image URL: " + studentImageUrl);
-            // Hiển thị thông tin chi tiết
-            tvDetailName.setText("Name: " + studentName);
-            tvDetailDepartment.setText("Department: " + studentDepartment);
-            tvDetailPhone.setText("Phone: " + studentPhone);
-            tvDetailGender.setText("Gender: " + studentGender);
-
-            // Ảnh
-//            if (studentImageUrl != null && !studentImageUrl.isEmpty()) {
-//                Picasso.get().load(studentImageUrl).into(imgStudentDetail);
-//            } else {
-//                imgStudentDetail.setImageResource(R.drawable.img_student);
-//            }
-        }
+        btnCertificate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(ActivityDetailStudent.this, ManagerCertificate.class);
+                intent.putExtra("STUDENTID",StudentId);
+                //mở mh
+                startActivity(intent);
+            }
+        });
     }
 
     private void addEvent() {
@@ -72,6 +59,21 @@ public class ActivityDetailStudent extends AppCompatActivity {
         tvDetailGender = findViewById(R.id.tvDetailGender);
         tvDetailPhone = findViewById(R.id.tvDetailPhone);
         btnBackDetail = findViewById(R.id.btnBackDetail);
+        btnCertificate = findViewById(R.id.btnCertificate);
         imgStudentDetail = findViewById(R.id.imgDetailImage);
+
+        Intent intent=getIntent();
+        //truyền khóa
+        student = (Student) intent.getSerializableExtra("STUDENT");
+        if(student != null){
+            StudentId = student.getId();
+            tvDetailName.setText(student.getName()+"");
+            tvDetailDepartment.setText(student.getDepartment()+"");
+            tvDetailPhone.setText(student.getPhone()+"");
+            tvDetailGender.setText(student.getGender()+"");
+        }
+        else {
+            Toast.makeText(this,"Lỗi khi load dữ liệu",Toast.LENGTH_LONG).show();
+        }
     }
 }

@@ -20,6 +20,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.tieuluan.model.Account;
 import com.example.tieuluan.model.Student;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -99,6 +100,7 @@ public class AddStudent extends AppCompatActivity {
 
                 FirebaseDatabase database = FirebaseDatabase.getInstance();
                 DatabaseReference myRef = database.getReference("dbStudent");
+                DatabaseReference myRef2 = database.getReference("dbAccount");
 
                 myRef.addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
@@ -134,7 +136,7 @@ public class AddStudent extends AppCompatActivity {
                             public void onSuccess(Void unused) {
                                 //thêm thành công
                                 Toast.makeText(getApplicationContext(), "Thêm thành công", Toast.LENGTH_LONG).show();
-                                finish();//thoát màn hình thêm
+                                finish();
                             }
                         }).addOnFailureListener(new OnFailureListener() {
                             @Override
@@ -143,6 +145,9 @@ public class AddStudent extends AppCompatActivity {
                                 Toast.makeText(getApplicationContext(), "Thêm thất bại"+e.toString(), Toast.LENGTH_LONG).show();
                             }
                         });
+
+                        Account account = new Account(id,id,"Student");
+                        myRef2.child(id).setValue(account).addOnSuccessListener(unused -> finish()).addOnFailureListener(e -> {});
                     }
 
                     @Override

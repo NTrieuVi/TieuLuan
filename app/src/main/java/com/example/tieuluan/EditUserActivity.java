@@ -47,14 +47,8 @@ public class EditUserActivity extends AppCompatActivity {
             public void onClick(View v) {
                 if(user!=null){
                     edtFullName.setText(user.getName()+"");
-                    Log.e("TAG", "onClick: "+edtFullName );
                     edtAge.setText(user.getAge()+"");
-                    Log.e("TAG", "onClick: "+edtAge );
-
                     edtPhone.setText(user.getPhone()+"");
-                    Log.e("TAG", "onClick: "+edtPhone );
-
-
 
                     String radioButtonText=user.getStatus();
                     RadioGroup radioGroup = findViewById(R.id.btnStatus);
@@ -75,7 +69,6 @@ public class EditUserActivity extends AppCompatActivity {
                     } else {
                         btnChoosePhoto.setImageResource(R.drawable.img_teacher);
                     }
-
                 }
                 else {
                     Toast.makeText(getApplicationContext(),"Lỗi khi load dữ liệu",Toast.LENGTH_LONG).show();
@@ -93,10 +86,7 @@ public class EditUserActivity extends AppCompatActivity {
                 String age=edtAge.getText().toString();
                 String id=user.getId();
                 String status=user.getStatus().toString();
-                Log.e("TAG", "onClick: "+phone );
-                Log.e("TAG", "onClick: "+age );
-                Log.e("TAG", "onClick: "+id);
-                Log.e("TAG", "onClick: "+status);
+
 //                ImageView img=user.getImage();
                 FirebaseDatabase database=FirebaseDatabase.getInstance();
                 DatabaseReference myRef= database.getReference("dbUser");
