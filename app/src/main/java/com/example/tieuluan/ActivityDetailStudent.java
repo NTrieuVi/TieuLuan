@@ -2,6 +2,7 @@ package com.example.tieuluan;
 
 import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -46,11 +47,18 @@ public class ActivityDetailStudent extends AppCompatActivity {
 
     private void addEvent() {
         btnBackDetail.setOnClickListener(new View.OnClickListener() {
+            SharedPreferences preferences = getSharedPreferences("MyPrefs", MODE_PRIVATE);
+            String userType = preferences.getString("userType", "");
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(ActivityDetailStudent.this, ActivityLogin.class);
-                startActivity(intent);
-                finish();
+                if ("User".equals(userType)) {
+
+                    finish();
+                } else {
+                    Intent intent = new Intent(ActivityDetailStudent.this, ActivityLogin.class);
+                    startActivity(intent);
+                    finish();
+                }
             }
         });
     }
