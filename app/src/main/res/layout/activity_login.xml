@@ -50,7 +50,6 @@
         android:layout_marginHorizontal="30dp"
         android:drawableStart="@drawable/user"
         android:hint="Nhập tên đăng nhập"
-        android:text="admin"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tvUserName"
         tools:Text="User name" />
@@ -73,7 +72,6 @@
         android:drawableStart="@drawable/pass"
         android:hint="Nhập mật khẩu"
         android:inputType="textPassword"
-        android:text="admin"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tvPassword"
         tools:Text="User name" />
