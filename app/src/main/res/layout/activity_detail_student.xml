@@ -124,7 +124,7 @@
         android:layout_marginHorizontal="20dp"
         android:layout_marginTop="88dp"
         android:backgroundTint="#0C46C4"
-        android:text="Back"
+        android:text="Exit"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/btnCertificate" />

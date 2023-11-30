@@ -48,7 +48,9 @@ public class ActivityDetailStudent extends AppCompatActivity {
         btnBackDetail.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                finish(); // Trở về màn hình trước đó
+                Intent intent = new Intent(ActivityDetailStudent.this, ActivityLogin.class);
+                startActivity(intent);
+                finish();
             }
         });
     }

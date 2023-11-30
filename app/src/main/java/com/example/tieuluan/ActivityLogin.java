@@ -4,6 +4,8 @@ import static android.content.ContentValues.TAG;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+
+import android.content.SharedPreferences;
 import android.util.Log;
 import android.content.Intent;
 import android.nfc.Tag;
@@ -37,7 +39,6 @@ public class ActivityLogin extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-
 
         DatabaseReference myRef = FirebaseDatabase.getInstance().getReference("dbAccount");
 
@@ -82,8 +83,15 @@ public class ActivityLogin extends AppCompatActivity {
                                 if (id != null && pass != null &&
                                         id.equals(username) && pass.equals(password)) {
                                     // Đăng nhập thành công
-                                    Toast.makeText(ActivityLogin.this, "Đăng nhập thành công", Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(ActivityLogin.this, "Login successfull", Toast.LENGTH_SHORT).show();
                                     userFound = true;
+
+                                    // Save user type to SharedPreferences
+                                    SharedPreferences preferences = getSharedPreferences("MyPrefs", MODE_PRIVATE);
+                                    SharedPreferences.Editor editor = preferences.edit();
+                                    editor.putString("userType", role);
+                                    editor.apply();
+
                                     if(Objects.equals(role, "Admin"))
                                         startActivity(new Intent(ActivityLogin.this, MainActivity.class));
                                     else if(Objects.equals(role, "User"))
@@ -108,10 +116,14 @@ public class ActivityLogin extends AppCompatActivity {
 
                                     finish();
                                 }
+                                else {
+                                    Toast.makeText(ActivityLogin.this, "Username or password is not exactly", Toast.LENGTH_SHORT).show();
+
+                                }
                             }
 
                             if (!userFound) {
-                                Toast.makeText(ActivityLogin.this, "Tài khoản hoặc mật khẩu không chính xác", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(ActivityLogin.this, "Account is not found", Toast.LENGTH_SHORT).show();
                             }
                         }
 

@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -75,8 +76,20 @@ public class ManagerStudent extends AppCompatActivity {
         // Back home
         Button back = findViewById(R.id.btnStdBackMain);
         back.setOnClickListener(v -> {
-            finish();
+            SharedPreferences preferences = getSharedPreferences("MyPrefs", MODE_PRIVATE);
+            String userType = preferences.getString("userType", "");
+
+            if ("User".equals(userType)) {
+                // Quay về màn hình đăng nhập
+                Intent intent = new Intent(ManagerStudent.this, ActivityLogin.class);
+                startActivity(intent);
+                finish();
+            } else if ("Admin".equals(userType)) {
+                // Quay về màn hình chính cho admin
+                finish();
+            }
         });
+
 
         // Search student
         edtSearch = findViewById(R.id.edtSearchStudent);
