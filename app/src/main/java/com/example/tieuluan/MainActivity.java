@@ -10,6 +10,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -26,7 +27,7 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
-    private Button btnManagerStudent, btnManagerUser;
+    private ImageButton btnManagerStudent, btnManagerUser;
 
 
     @Override
